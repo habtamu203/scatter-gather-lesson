@@ -22,6 +22,15 @@ http://www.mulesoft.org/schema/mule/file http://www.mulesoft.org/schema/mule/fil
 	</s3:config>
 	<flow name="scatter-gather-lessonFlow" doc:id="ecf05af0-3734-45f7-963a-ddb81b9b2f6b" >
 		<http:listener doc:name="Listener" doc:id="ffdc8fa7-e326-4805-8134-bef3a89ad4f3" config-ref="HTTP_Listener_config" path="/scatter-gather"/>
+		<ee:transform doc:name="Transform Message" doc:id="b89ae7ba-f143-4092-81da-26b8c02f77c9">
+					<ee:message>
+						<ee:set-payload><![CDATA[%dw 2.0
+output application/java
+---
+{
+}]]></ee:set-payload>
+					</ee:message>
+				</ee:transform>
 		<scatter-gather doc:name="Scatter-Gather" doc:id="b8b99b57-ab16-408f-8272-f470405063c6" >
 			<route >
 				<try doc:name="Try" doc:id="2d9a1c80-e962-4317-8a51-f04f50ef66be" >
@@ -57,6 +66,19 @@ output application/json
 payload]]></ee:set-payload>
 					</ee:message>
 				</ee:transform>
+			</route>
+			<route >
+				<ee:transform doc:name="Transform Message" doc:id="600f0c48-4ec7-472b-b97e-d20dfe3c88ab" >
+					<ee:message >
+						<ee:set-payload ><![CDATA[%dw 2.0
+output application/java
+---
+payload]]></ee:set-payload>
+					</ee:message>
+				</ee:transform>
+				<db:bulk-insert doc:name="Bulk insert" doc:id="91d29172-3076-4cd5-a6cf-d3a22d200158" config-ref="Database_Config">
+					<db:sql ><![CDATA[insert into customer_info]]></db:sql>
+				</db:bulk-insert>
 			</route>
 		</scatter-gather>
 		<ee:transform doc:name="Transform Message" doc:id="1a5e1459-f74d-4976-af19-0e06acc8372a" >
