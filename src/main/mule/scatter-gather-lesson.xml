@@ -34,7 +34,7 @@ http://www.mulesoft.org/schema/mule/file http://www.mulesoft.org/schema/mule/fil
 output application/json
 ---
 
-(payload)]]></ee:set-payload>
+[payload]]]></ee:set-payload>
 					</ee:message>
 				</ee:transform>
 					<error-handler >
