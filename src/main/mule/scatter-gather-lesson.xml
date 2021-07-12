@@ -1,0 +1,72 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<mule xmlns:file="http://www.mulesoft.org/schema/mule/file" xmlns:s3="http://www.mulesoft.org/schema/mule/s3"
+	xmlns:vm="http://www.mulesoft.org/schema/mule/vm"
+	xmlns:tracking="http://www.mulesoft.org/schema/mule/ee/tracking" xmlns:ee="http://www.mulesoft.org/schema/mule/ee/core" xmlns:db="http://www.mulesoft.org/schema/mule/db" xmlns:salesforce="http://www.mulesoft.org/schema/mule/salesforce" xmlns:http="http://www.mulesoft.org/schema/mule/http" xmlns="http://www.mulesoft.org/schema/mule/core" xmlns:doc="http://www.mulesoft.org/schema/mule/documentation" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://www.mulesoft.org/schema/mule/core http://www.mulesoft.org/schema/mule/core/current/mule.xsd
+http://www.mulesoft.org/schema/mule/http http://www.mulesoft.org/schema/mule/http/current/mule-http.xsd
+http://www.mulesoft.org/schema/mule/salesforce http://www.mulesoft.org/schema/mule/salesforce/current/mule-salesforce.xsd
+http://www.mulesoft.org/schema/mule/db http://www.mulesoft.org/schema/mule/db/current/mule-db.xsd
+http://www.mulesoft.org/schema/mule/ee/core http://www.mulesoft.org/schema/mule/ee/core/current/mule-ee.xsd
+http://www.mulesoft.org/schema/mule/ee/tracking http://www.mulesoft.org/schema/mule/ee/tracking/current/mule-tracking-ee.xsd
+http://www.mulesoft.org/schema/mule/vm http://www.mulesoft.org/schema/mule/vm/current/mule-vm.xsd
+http://www.mulesoft.org/schema/mule/s3 http://www.mulesoft.org/schema/mule/s3/current/mule-s3.xsd
+http://www.mulesoft.org/schema/mule/file http://www.mulesoft.org/schema/mule/file/current/mule-file.xsd">
+	<http:listener-config name="HTTP_Listener_config" doc:name="HTTP Listener config" doc:id="5e9dd68e-6af4-4a5c-954e-c45c4d23669c" >
+		<http:listener-connection host="0.0.0.0" port="8081" />
+	</http:listener-config>
+	<salesforce:sfdc-config name="Salesforce_Config" doc:name="Salesforce Config" doc:id="17287ef7-9a07-4a2e-99f5-8b02882ba0da" >
+		<salesforce:basic-connection username="habtsheco@gmail.com" password="Salesforce4453" securityToken="sn6yRSo9SJ8SfZT8ssGqoqZ0G" />
+	</salesforce:sfdc-config>
+	<s3:config name="Amazon_S3_Configuration" doc:name="Amazon S3 Configuration" doc:id="c37a14df-74a6-4a2e-9f86-1771e6005e0f" >
+		<s3:basic-connection accessKey="AKIAZTWR5W32EDCPPNRB" secretKey="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" />
+	</s3:config>
+	<flow name="scatter-gather-lessonFlow" doc:id="ecf05af0-3734-45f7-963a-ddb81b9b2f6b" >
+		<http:listener doc:name="Listener" doc:id="ffdc8fa7-e326-4805-8134-bef3a89ad4f3" config-ref="HTTP_Listener_config" path="/scatter-gather"/>
+		<scatter-gather doc:name="Scatter-Gather" doc:id="b8b99b57-ab16-408f-8272-f470405063c6" >
+			<route >
+				<try doc:name="Try" doc:id="2d9a1c80-e962-4317-8a51-f04f50ef66be" >
+					<salesforce:query-all doc:name="Query all" doc:id="9cf94420-c462-4c79-9c46-b1f4c933e61a" config-ref="Salesforce_Config">
+					<salesforce:salesforce-query><![CDATA[select first_name__c, last_name__c, email__c from Habtamu_Three__c]]></salesforce:salesforce-query>
+				</salesforce:query-all>
+					<ee:transform doc:name="Transform Message" doc:id="7a93f2f1-b30e-412b-b4c0-8838e4e368cc">
+					<ee:message>
+						<ee:set-payload><![CDATA[%dw 2.0
+output application/json
+---
+
+(payload)]]></ee:set-payload>
+					</ee:message>
+				</ee:transform>
+					<error-handler >
+						<on-error-continue enableNotifications="true" logException="true" doc:name="On Error Continue" doc:id="c7978b48-13d1-4919-947b-6715dae888ab" type="ANY">
+							<set-payload value="The error is in first road" doc:name="Set Payload" doc:id="ba16ed39-a5ad-41ba-9c15-ae1228a20a48" />
+						</on-error-continue>
+					</error-handler>
+				</try>
+			</route>
+			<route >
+				<db:select doc:name="Select" doc:id="c7656cda-4ea0-4ee3-9cba-b6c938508e71" config-ref="Database_Config">
+					<db:sql><![CDATA[select * from customer_info]]></db:sql>
+				</db:select>
+				<ee:transform doc:name="Transform Message" doc:id="5b1c2b78-3706-4490-8fa3-17386e0dc534" >
+					<ee:message >
+						<ee:set-payload ><![CDATA[%dw 2.0
+output application/json
+---
+
+payload]]></ee:set-payload>
+					</ee:message>
+				</ee:transform>
+			</route>
+		</scatter-gather>
+		<ee:transform doc:name="Transform Message" doc:id="1a5e1459-f74d-4976-af19-0e06acc8372a" >
+			<ee:message >
+				<ee:set-payload ><![CDATA[%dw 2.0
+output application/json
+---
+flatten(payload..payload)]]></ee:set-payload>
+			</ee:message>
+		</ee:transform>
+	</flow>
+	
+</mule>

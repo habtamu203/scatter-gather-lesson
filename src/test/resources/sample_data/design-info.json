@@ -1,0 +1,8 @@
+{
+  "sampleData": {
+    "c879a19d-4754-4786-bad9-77e7d022ef51": {
+      "vars-hab2": "sample_data/defaultstringtype_1.dwl",
+      "vars-hab1": "sample_data/defaultstringtype.dwl"
+    }
+  }
+}

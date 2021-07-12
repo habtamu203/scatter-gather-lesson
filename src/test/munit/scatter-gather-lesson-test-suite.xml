@@ -1,0 +1,18 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<mule xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+	xmlns:munit="http://www.mulesoft.org/schema/mule/munit" xmlns:munit-tools="http://www.mulesoft.org/schema/mule/munit-tools"
+	xmlns="http://www.mulesoft.org/schema/mule/core" xmlns:doc="http://www.mulesoft.org/schema/mule/documentation"
+	xsi:schemaLocation="
+		http://www.mulesoft.org/schema/mule/core http://www.mulesoft.org/schema/mule/core/current/mule.xsd
+		http://www.mulesoft.org/schema/mule/munit http://www.mulesoft.org/schema/mule/munit/current/mule-munit.xsd
+		http://www.mulesoft.org/schema/mule/munit-tools  http://www.mulesoft.org/schema/mule/munit-tools/current/mule-munit-tools.xsd">
+	<munit:config name="scatter-gather-lesson-test-suite.xml" />
+	<munit:test name="scatter-gather-lesson-test-suite-scatter-gather-lessonFlowTest" doc:id="5cdff4cf-d364-434b-b675-73d68467e25d" description="Test">
+		<munit:execution >
+			<flow-ref doc:name="Flow-ref to scatter-gather-lessonFlow" doc:id="b3f873ec-e4ec-4cd8-ace9-fced302e7593" name="scatter-gather-lessonFlow"/>
+		</munit:execution>
+	</munit:test>
+
+
+</mule>
